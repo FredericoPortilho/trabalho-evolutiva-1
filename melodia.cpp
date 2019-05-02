@@ -14,59 +14,31 @@ melodia::melodia(affective &p):
 
         //int r = *select_randomly(foo.begin(), foo.end());
         /*
-        duration
-        Note Duration Integer Used
-        whole note 0
-        dotted half 1
-        half 2
-        dotted quarter 3
-        quarter 4
-        dotted eigth 5
-        eigth 6
-        sixteenth 7
+        Nota compasso inteiro 16
+        Metade compasso 8
+        1/4 -- 4
+        1/8 -- 2 
+        1/16  -- 1
         */
          int duracao = 16;
 
-        //std::vector<int> _escala{1, 3, 5, 6, 8, 10, 12, 13};
-        //std::cout<< "Tamanho" << p.size()<< "\n\n" ;
-
+  
          _melodia.resize(p.size());
          for(int i=0; i < p.size(); ++i){
             //disp(p);
-            //_melodia.push_back(std::vector<std::pair<int, int> >());
             divideNota(p.getArousal(), duracao, i, this->qtdNotasMelodia);
         }
-
-/*
-        for (int i = 0; i < p.size(); ++i) {
-            std::cout << _melodia.size() << "\n";
-            for (int j = 0; j < _melodia[i].size(); ++j) {
-                std::cout << " " << _melodia[i].size();
-            }
-            std::cout << "\n" ;
-        }
-*/
 
 
         for (int i = 0; i < _melodia.size(); ++i) {
             for (int j = 0; j < _melodia[i].size(); ++j) {
                 this->_melodia[i][j].first = pitch(this->_generator);
-                //this->_melodia[i].second = _duracoes[duration(this->_generator)];
             }
         }
 
         //disp(p);
 
 }
-/*
-melodia::melodia(affective &p,  std::vector<int> &tamanhoFilho)
-{
-    _melodia.resize(p.size());
-    for(int i=0; i<p.size();++i){
-        _melodia[i].resize(tamanhoFilho[i]);
-    }
-
-}*/
 melodia::melodia(affective &p,  int filho)
 {
 
@@ -119,47 +91,11 @@ int melodia::evaluate(affective &p) {
     //std::vector<int> _escala{1, 3, 5, 6, 8, 10, 12, 13};//escala maior
     std::vector<int>::iterator it;
 
-    //Metricas Avaliação Melodia Comum
-    /*
-    1. SAME NOTE: Fitness Points: 17. The scale degree of the next note has not
-    changed.
-    2. ONE STEP: Fitness Points: 17. The scale degree of the next note has gone up
-    or down one step.
-    3. ONE THIRD: Fitness Points: 15. The scale degree of the next note has gone up
-    or down two steps.
-    4. ONE FOURTH: Fitness Points: 12. The scale degree of the next note has gone
-    up or down three steps.
-    5. ONE FIFTH: Fitness Points: 10. The scale degree of the next note has gone up
-    or down four steps.
-    6. OVER FIFTH: Fitness Points: -25. The scale degree of the next note is greater
-    than four steps away.
-    7. FOUR SEVEN: Fitness Points: -25. The current note is scale degree four and
-    the next note is scale degree seven.
-    8. SIXTEENTH NOTE: Fitness Points: -10. The current note is a sixteenth note.
-    9. DRASTIC DURATION CHANGE: Fitness Points: -20. The duration change
-    between the current note and the next note is more than four steps in table 1.
-    10. BEGIN TONIC: Fitness Points: 50. The melody begins with the tonic note
-    (scale degree 1).
-    11. END TONIC: Fitness Points: 50. The melody ends in the tonic note (scale
-    degree 1).
-    */
 
-    //Metricas relacionadas a arousal valencia
-    /*
-
-    */
 
     //disp(p);
     int total = 0;
-    /*
-    //Dentro da escala
-    for (int i = 0; i < p.size() - 1; ++i) {
-        it = find(_escala.begin(), _escala.end(), this->_melodia[i]);
-        if ( it != _escala.end()){
-            total++;
-        }
-    }
-    */
+    
     int numNotasCompassoAnterior = 0;
     int numNotasCompassoAtual = 0;
     int ultimo = 0;
@@ -170,7 +106,7 @@ int melodia::evaluate(affective &p) {
 
             ultimo = j;
 
-            // Avaliações comparam nota seguinte a anterior
+            // AvaliaÃ§Ãµes comparam nota seguinte a anterior
             if(j != 0){
                 int difPitch = std::abs(_melodia[i][j].first - _melodia[i][j-1].first); //diferenca entre notas
                 int difDur = std::abs(_melodia[i][j].second - _melodia[i][j-1].second); //diferenca entre notas
@@ -187,7 +123,7 @@ int melodia::evaluate(affective &p) {
                 }
 
 
-                //mudança drastica de duração
+                //mudanÃ§a drastica de duraÃ§Ã£o
                 if(difDur > 10){
                     total -= 20;
                     total -= p.getValencia()*10;
@@ -217,7 +153,6 @@ int melodia::evaluate(affective &p) {
 
 
 
-        //comeca na tonica
 
 
         if(i != 0){
@@ -243,6 +178,7 @@ int melodia::evaluate(affective &p) {
 
     }//fim for externo
 
+     //comeca na tonica
     if(_melodia[0][0].first == 1 || _melodia[0][0].first == 8 || _melodia[0][0].first == 15){
             total += 10+5*p.getValencia()/_melodia.size();
     }
@@ -254,12 +190,8 @@ int melodia::evaluate(affective &p) {
     //std::cout<< total/this->qtdNotasMelodia <<" ";
     total = total/this->qtdNotasMelodia;
 
-    if (total < 0){
-        // total = -100;
-    }
-
-    //total = total/_melodia.size();
-    //std::cout << "AQUI 2";
+    
+    
     return total;
 }
 
@@ -304,21 +236,12 @@ void melodia::mutation(affective &p, double mutation_strength) {
     }*/
 
 
-
-    // Smart approach:
-    // std::binomial_distribution<double> d(p.size(), mutation_strength)
-    // int n = d(_generator)
-    // flip $n$ bits
 }
 
 melodia melodia::crossover(affective &p, melodia &rhs) {
     std::uniform_int_distribution<int> d(0,p.size()-1);
     //std::uniform_int_distribution<size_t> d(0,rhs._melodia.size()-1);
     int gerado = d(_generator);
-
-    //child = rhs;
-    //std::vector<std::pair <int, int> > melodiaChild;
-    //int qtdNotas;
 
 
     //define tamanho melodia filho
@@ -348,17 +271,6 @@ melodia melodia::crossover(affective &p, melodia &rhs) {
     return child;
 }
 
-/*
-int melodia::tamanho() {
-    int numeroNotasMelodia=0;
-    for(int i=0; i<_melodia.size();++i){
-        for(int j=0; j<_melodia.size();++j){
-            numeroNotasMelodia++;
-        }
-    }
-    return numeroNotasMelodia;
-}
-*/
 
 
 int melodia::tamanhoMelodia() {
